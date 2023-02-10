@@ -1,7 +1,6 @@
 package org.jfree.data.test;
 
-import static org.junit.Assert.*; import org.jfree.data.*;
-import org.jmock.*; import org.junit.*;import java.security.*;
+import static org.junit.Assert.*; import org.jfree.data.*; import org.jmock.*; import org.junit.*;import java.security.*; import java.util.*;
 
 public class DataUtilitiesTest {
 
@@ -100,13 +99,13 @@ public class DataUtilitiesTest {
 	         {
 	             one(values).getRowCount();
 	             will(returnValue(2));
-	             one(values).getValue(0, 0);
+	             one(values).getValue(0, -1);
 	             will(returnValue(2));
-	             one(values).getValue(1, 0);
-	             will(returnValue(null));
+	             one(values).getValue(1, -1);
+	             will(returnValue(2));
              }
 	     });
-		 DataUtilities.calculateColumnTotal(values, 1);
+		 DataUtilities.calculateColumnTotal(values, -1);
 	 }
 	 
 	 @Test
@@ -189,6 +188,26 @@ public class DataUtilitiesTest {
 	     assertEquals("Expected result is 0", 0, result, .000000001d);
 	 }
 	 
+	 @Test (expected = InvalidParameterException.class)
+	 /**
+	  * 
+	  */
+	 public void calculateRowTotalTestInvalidData() {
+		 Mockery mockingContext = new Mockery();
+	     final Values2D values = mockingContext.mock(Values2D.class);
+	     mockingContext.checking(new Expectations() {
+	         {
+	             one(values).getColumnCount();
+	             will(returnValue(2));
+	             one(values).getValue(-1, 0);
+	             will(returnValue(2));
+	             one(values).getValue(-1, 1);
+	             will(returnValue(2));
+             }
+	     });
+		 DataUtilities.calculateRowTotal(values, -1);
+	 }
+	 
 	 @Test
 	 /**
 	  * 
@@ -249,54 +268,27 @@ public class DataUtilitiesTest {
 	     KeyedValues keyedValues = mockingContext.mock(KeyedValues.class);
 	     mockingContext.checking(new Expectations() {
 	         {
-	             one(keyedValues).getValue("0");
-	             will(returnValue(5));
-	             one(keyedValues).getValue("1");
-	             will(returnValue(9));
-	             one(keyedValues).getValue("2");
-	             will(returnValue(2));
-	             one(keyedValues).getKey(0);
-	             will(returnValue("0"));             
-	             one(keyedValues).getKey(1);
-	             will(returnValue("1"));
-	             one(keyedValues).getKey(2);
-	             will(returnValue("2"));
-	             one(keyedValues).getItemCount();
+	        	 allowing(keyedValues).getValue(0);
+	        	 will(returnValue(5.0));
+	        	 allowing(keyedValues).getKey(0);
+	        	 will(returnValue(1));
+	        	 allowing(keyedValues).getValue(1);
+	        	 will(returnValue(9.0));
+	        	 allowing(keyedValues).getKey(1);
+	        	 will(returnValue(2));
+	        	 allowing(keyedValues).getValue(2);
+	        	 will(returnValue(2.0));
+	        	 allowing(keyedValues).getKey(2);
+	        	 will(returnValue(3));
+	             allowing(keyedValues).getItemCount();
 	        	 will(returnValue(3));
 	         }
 	     });
-//	     Mockery mockingExpected = new Mockery();
-//	     KeyedValues expected = mockingExpected.mock(KeyedValues.class);
-//	     mockingExpected.checking(new Expectations() {
-//	         {
-//	        	 one(expected).getValue(0);
-//	             will(returnValue(0.3125));
-//	             one(expected).getValue(1);
-//	             will(returnValue(0.875));
-//	             one(expected).getValue(2);
-//	             will(returnValue(1.0));
-//	             one(expected).getKey(0);
-//	             will(returnValue(0));   
-//	             one(expected).getKey(1);
-//	             will(returnValue(1));
-//	             one(expected).getKey(2);
-//	             will(returnValue(2));
-//	             one(expected).getItemCount();
-//	        	 will(returnValue(3));
-//	         }
-//	     });
+	     List<Number> expected = new ArrayList<>(Arrays.asList(0.3125, 0.875, 1.0));
 	     KeyedValues result = DataUtilities.getCumulativePercentages(keyedValues);
-//	     assertEquals("Expected result is {0,0.3125},{1,0.875},{2,1.0}", expected, result);
-//		 Mockery mockingContext = new Mockery();
-//		 final KeyedValues keyValues = mockingContext.mock(KeyedValues.class);
-//		 mockingContext.checking(new Expectations() {
-//			 {
-//				 one(keyValues).getItemCount();
-//				 will(returnValue(3));
-//				 one(keyValues).getValue(keyValues.getKey(0));
-//				 will(returnValue(5));
-//			 }
-//		 });
+	     for(int i = 0; i < keyedValues.getItemCount(); i++) {
+	    	 assertEquals(expected.get(i), result.getValue(i));
+	     }
 	 }
 	 
 
