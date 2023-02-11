@@ -20,6 +20,7 @@ public class RangeTest {
     public void setUpEqualValueRange() throws Exception { 
     	testRangeEqual = new Range(5, 5);
     }
+    
    
 	@Test
 	/**
@@ -113,6 +114,56 @@ public class RangeTest {
 		assertEquals("Expected to return false", false, testRangeDifferent.contains(7));
 	}
 
+	 @Test
+	    /**
+	 * intersectionOutOfLowerBound tests the intersection value when the intersection range you are testing
+	 * is outside of the lower bound of the original range.
+	 * Expected value: False
+	 */
+	public void intersectionTestBLB() {
+	    assertEquals("Expected intersection result is false", false, testRangeDifferent.intersects(-10,-8));
+	}
+
+	@Test
+	/**
+	 * intersectionTestAtLB tests the intersection value when the intersection range you are testing
+	 * is exactly at the upper-bound. The range is half within bounds and half outside.
+	 * Expected Value: True
+	 */
+	public void intersectionTestLB() {
+	    assertEquals("Expected intersection result is true", true, testRangeDifferent.intersects(-10,0));
+	}    
+	 
+	@Test
+	/**
+	 * intersectionOutOfLowerBound tests the intersection value when the intersection range you are testing
+	 * is exactly within the range you are given.
+	 * Expected Value: True
+	 */
+	public void intersectionTestNOM() {
+	    assertEquals("Expected intersection result is true", true, testRangeDifferent.intersects(-1,-1));
+	}
+	
+	@Test
+	/**
+	 * intersectionTestAtUB tests the intersection value when the intersection range you are testing
+	 * is exactly at the upper-bound. The range is half within bounds and half outside.
+	 * Expected Value: True
+	 */
+	public void intersectionTestUB() {
+	    assertEquals("Expected intersection result is true", true, testRangeDifferent.intersects(0, 10));
+	}
+	
+	@Test
+	/**
+	 * intersectionTestOutofUpperBound tests the intersection value when the intersection range you are testing
+	 * is completely outside of the upper bound of the range you are testing.
+	 * Expected Value: False
+	 */
+	public void intersectionTestAUB() {
+	    assertEquals("Expected intersection result is true", false, testRangeDifferent.intersects(10, 20));
+	}
+	
     @After
     public void tearDown() throws Exception {}
 
